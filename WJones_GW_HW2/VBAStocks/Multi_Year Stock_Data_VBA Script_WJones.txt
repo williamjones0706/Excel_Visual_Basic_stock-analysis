@@ -1,0 +1,132 @@
+Sub stock_analysis():
+ ' Set dimensions
+ Dim total As Double
+ Dim i As Long
+ Dim change As Single
+ Dim j As Integer
+ Dim start As Long
+ Dim rowCount As Long
+ Dim percentChange As Single
+ Dim days As Integer
+ Dim dailyChange As Single
+ Dim averageChange As Single
+ Dim ws As Worksheet
+ Dim Max_percent_increase As Double
+ Dim Max_percent_decrease As Double
+ Dim Max_total_volume As Double
+ 
+ 
+ For Each ws In Worksheets
+ ' Set title row
+ ws.Range("I1").Value = "Ticker"
+ ws.Range("J1").Value = "Yearly Change"
+ ws.Range("K1").Value = "Percent Change"
+ ws.Range("L1").Value = "Total Stock Volume"
+ ' Set initial values
+ j = 0
+ total = 0
+ change = 0
+ start = 2
+ ' get the row number of the last row with data
+ rowCount = ws.Cells(Rows.Count, "A").End(xlUp).Row
+ For i = 2 To rowCount
+     ' If ticker changes then print results
+     If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+         ' Stores results in variables
+         total = total + ws.Cells(i, 7).Value
+         ' Handle zero total volume
+         If total = 0 Then
+             ' print the results
+             ws.Range("I" & 2 + j).Value = ws.Cells(i, 1).Value
+             ws.Range("J" & 2 + j).Value = 0
+             ws.Range("K" & 2 + j).Value = "%" & 0
+             ws.Range("L" & 2 + j).Value = 0
+         Else
+             ' Find First non zero starting value
+             If ws.Cells(start, 3) = 0 Then
+                 For find_value = start To i
+                     If ws.Cells(find_value, 3).Value <> 0 Then
+                         start = find_value
+                         Exit For
+                     End If
+                  Next find_value
+             End If
+             ' Calculate Change
+             change = (ws.Cells(i, 6) - ws.Cells(start, 3))
+             percentChange = Round((change / ws.Cells(start, 3) * 100), 2)
+             ' start of the next stock ticker
+             start = i + 1
+             ' print the results
+             ws.Range("I" & 2 + j).Value = ws.Cells(i, 1).Value
+             ws.Range("J" & 2 + j).Value = Round(change, 2)
+             ws.Range("K" & 2 + j).Value = "%" & percentChange
+             ws.Range("L" & 2 + j).Value = total
+         End If
+         ' reset variables for new stock ticker
+         total = 0
+         change = 0
+         j = j + 1
+         days = 0
+     ' If ticker is still the same add results
+     Else
+         total = total + ws.Cells(i, 7).Value
+     End If
+ Next i
+Lastcolor_row = ws.Cells(Rows.Count, "j").End(xlUp).Row
+For i = 2 To Lastcolor_row
+If ws.Cells(i, 10).Value >= 0 Then
+ws.Cells(i, 10).Interior.ColorIndex = 4
+Else
+ws.Cells(i, 10).Interior.ColorIndex = 3
+End If
+Next i
+    
+   'Find the max and min for % and greatest volume
+    Max_percent_increase = ws.Application.WorksheetFunction.Max(Range("K:K"))
+    Max_percent_decrease = ws.Application.WorksheetFunction.Min(Range("K:K"))
+    Max_total_volume = ws.Application.WorksheetFunction.Max(Range("L:L"))
+    
+    'print the value headers and values
+    ws.Range("N2").Value = "Greatest Percent Increase"
+    ws.Range("N3").Value = "Greatest Percent Decrease"
+    ws.Range("N4").Value = "Greatest Total Volume"
+    ws.Range("O1").Value = "Ticker"
+    ws.Range("P1").Value = "Value"
+    
+    ws.Range("P2").Value = Max_percent_increase & "%"
+    ws.Range("P3").Value = Max_percent_decrease & "%"
+    ws.Range("P4").Value = Max_total_volume
+    
+    
+    'Find and print the ticker for the percent increase/decrease max
+    Last_row_findticker = ws.Cells(Rows.Count, "G").End(xlUp).Row
+    
+    For i = 2 To Last_row_findticker
+        If ws.Cells(i, "G").Value = ws.Range("P2").Value Then
+            ws.Range("O2").Value = ws.Cells(i, "A").Value
+        End If
+        
+        If ws.Cells(i, "G").Value = ws.Range("P3").Value Then
+            ws.Range("O3").Value = ws.Cells(i, "A").Value
+        End If
+        
+    Next i
+    
+    'Find and print the ticker for the percent increase/decrease max
+    Last_row_findtotalticker = ws.Cells(Rows.Count, "L").End(xlUp).Row
+    
+    For i = 2 To Last_findtotalticker
+        If ws.Cells(i, "L").Value = ws.Range("P4").Value Then
+            ws.Range("O4").Value = ws.Cells(i, "A").Value
+        End If
+        
+    Next i
+    
+    'AutoFit new columns created
+    ws.Columns("J:P").AutoFit
+    
+Next ws
+
+End Sub
+
+

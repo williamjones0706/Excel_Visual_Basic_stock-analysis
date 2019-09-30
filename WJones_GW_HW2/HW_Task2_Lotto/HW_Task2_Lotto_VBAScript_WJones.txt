@@ -1,0 +1,61 @@
+Sub HW_Task2_Lotto()
+
+    ' Create variables to hold winners. (Use "Long" because the numbers exceed the limit for integers)
+    Dim first_place As Long
+    Dim second_place As Long
+    Dim third_place As Long
+    Dim runner1 As Long
+    Dim runner2 As Long
+    Dim runner3 As Long
+
+    ' Establish the winning ticket numbers
+    first_place = 3957481
+    second_place = 5865187
+    third_place = 2817729
+
+    ' Establish the runner-up numbers
+    runner1 = 2275339
+    runner2 = 5868182
+    runner3 = 1841402
+    
+    ' Count to the end of the data in column 3
+    lastrow = Cells(Rows.Count, 3).End(xlUp).Row
+
+    ' Loop through each of the lotto tick
+    For i = 2 To lastrow
+        
+        If Cells(i, 3).Value = first_place Then
+            Range("F2") = Cells(i, 1)
+            Range("G2") = Cells(i, 2)
+            Range("H2") = first_place
+            MsgBox "Congratulations First Place Winner! " & Range("F2") & " " & Range("G2")
+                
+        ElseIf Cells(i, 3).Value = second_place Then
+            Range("F3") = Cells(i, 1)
+            Range("G3") = Cells(i, 2)
+            Range("H3") = second_place
+                
+        ElseIf Cells(i, 3).Value = third_place Then
+            Range("F4") = Cells(i, 1)
+            Range("G4") = Cells(i, 2)
+            Range("H4") = third_place
+                
+        End If
+                
+    Next i
+        
+    For i = 2 To lastrow
+        
+        If Cells(i, 3).Value = runner1 Or runner2 Or runner3 Then
+            Range("F5") = Cells(i, 1)
+            Range("G5") = Cells(i, 2)
+            Range("H5") = Cells(i, 3)
+                
+        End If
+                
+        Exit For
+            
+    Next i
+            
+
+End Sub
